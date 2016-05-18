@@ -1,25 +1,31 @@
 #pragma once
 #include <Game.h>
 #include "Level.h"
-#include "Cartoon.h"
+#include "MainMenu.h"
+#include "RestartMenu.h"
+#include "PauseMenu.h"
 
 enum E_GAME_STATE
 {
 	GS_MENU,
-	GS_RESTART,
 	GS_PAUSE,
 	GS_ACTION,
+	GS_RESTART
 };
 
 class CGame: public IGame
 {
-	CCartoon *_pRestartMenu;          
+	CMainMenu *_pMainMenu;           // Это наше главное меню.
+	CRestartMenu *_pRestartMenu;
+	СPauseMenu *_pPauseMenu;
 
 	E_GAME_STATE _eState;
 	CLevel *_pLevel;
 	uint32 _uiLastTime;
+
+	bool _bEndAction;
 public:
-	CGame(): _eState(GS_MENU), _pLevel(0) {}
+	CGame(): _eState(GS_MENU), _pLevel(0), _bEndAction(false) {}
 	virtual ~CGame();
 
     /*
