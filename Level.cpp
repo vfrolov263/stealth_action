@@ -46,24 +46,6 @@ void CALLBACK CLevel::Update(float fTime)
 
 void CALLBACK CLevel::Draw()
 {
-	/*
-	«десь будет прорисовка противников и ловушек.
-	*/
-
-	glBegin(GL_LINES);
-	for (int i = 0; i < 800; i += 32)
-	{
-		glVertex2i(i, 0);
-		glVertex2i(i, 600);
-	}
-
-	for (int i = 0; i < 600; i += 32)
-	{
-		glVertex2i(0, i);
-		glVertex2i(800, i);
-	}
-	glEnd();
-
 	for (vector<ISprite *>::iterator it = _tilesZeroVect.begin(); it != _tilesZeroVect.end(); ++it)
 		(*it)->Draw();
 
@@ -84,19 +66,8 @@ void CALLBACK CLevel::Draw()
 	for (vector<ISprite *>::iterator it = _tilesTwoVect.begin(); it != _tilesTwoVect.end(); ++it)
 		(*it)->Draw();
 
-	/*glBegin(GL_QUADS);
-	for (int i = 0; i < _levSize.x; ++i)
-		for (int j = 0; j < _levSize.y; ++j)
-		{
-			if (_collMap[i][j])
-			{
-				glVertex2f(i * 32, j * 32 + 32);
-				glVertex2f(i * 32, j* 32 );
-				glVertex2f(i * 32 + 32, j * 32);
-				glVertex2f(i * 32 + 32, j * 32 + 32);
-			}
-		}
-	glEnd();*/
+	if (pInput->IsKeyHit(KEY_ESCAPE))
+		_pGame->SetState(GS_PAUSE);
 }
 
 void CALLBACK CLevel::GetLevelParam(string &stringLevLine, cstr cstrParamName, str strParam)
