@@ -5,12 +5,12 @@ void CALLBACK СPauseMenu::Init(){
 	pComponentsManager->GetComponent((IComponent *&)_pButtonReturn, GCT_ANIMATION); 
 	pComponentsManager->GetComponent((IComponent *&)_pButtonUnknow, GCT_ANIMATION); 
 
-	_pBackPauseSprite->SetTexture("BackgroundOfPause.png");             // Назначаем используемую спрайтом текстуру.
-	_pButtonReturn->SetTexture("return_to_the_game.png");               // Назначаем используемую анимацией текстуру.
+	_pBackPauseSprite->SetTexture("data/BackgroundOfPause.png");             // Назначаем используемую спрайтом текстуру.
+	_pButtonReturn->SetTexture("data/return_to_the_game.png");               // Назначаем используемую анимацией текстуру.
 	_pButtonReturn->SetFrameSize(Vector2ui(410, 65));         // Назначаем размер одного кадра.
 	_pButtonReturn->SetPosition(Vector2f(1095, 90));         // Устанавливаем позицию на экране.
 
-	_pButtonUnknow->SetTexture("to_finish_the_game.png");  
+	_pButtonUnknow->SetTexture("data/to_finish_the_game.png");  
 	_pButtonUnknow->SetFrameSize(Vector2ui(410, 65));    
 	_pButtonUnknow->SetPosition(Vector2f(1109, 210));     
 }

@@ -7,17 +7,17 @@ void CALLBACK CRestartMenu::Init()
 	pComponentsManager->GetComponent((IComponent *&)_pButtonEnd, GCT_ANIMATION);      // Получаем анимацию и записываем ее в указатель _pBackEnd
 	pComponentsManager->GetComponent((IComponent *&)_pButtonNew, GCT_ANIMATION);	  // Получаем анимацию и записываем ее в указатель _pBackNew
 
-	_pBackSprite->SetTexture("back.png");   // Назначаем используемую спрайтом текстуру.
+	_pBackSprite->SetTexture("data/rest_back.png");   // Назначаем используемую спрайтом текстуру.
 	
-	_pButtonEnd->SetTexture("end.png");             // Назначаем используемую анимацией текстуру.
+	_pButtonEnd->SetTexture("data/rest_end.png");             // Назначаем используемую анимацией текстуру.
 	_pButtonEnd->SetFrameSize(Vector2ui(468, 70));  // Назначаем размер одного кадра.
 	//_pButtonEnd->Rotate(15);
-	_pButtonEnd->SetPosition(Vector2f(100, 300));   // Устанавливаем позицию на экране.
+	_pButtonEnd->SetPosition(Vector2f(30, 300));   // Устанавливаем позицию на экране.
 
-	_pButtonNew->SetTexture("new.png");             // Назначаем используемую анимацией текстуру.
+	_pButtonNew->SetTexture("data/rest_new.png");             // Назначаем используемую анимацией текстуру.
 	_pButtonNew->SetFrameSize(Vector2ui(425, 80));  // Назначаем размер одного кадра.
 	//_pButtonNew->Rotate(15);
-	_pButtonNew->SetPosition(Vector2f(100, 500));   // Устанавливаем позицию на экране.
+	_pButtonNew->SetPosition(Vector2f(30, 500));   // Устанавливаем позицию на экране.
 }
 
 CRestartMenu::CRestartMenu(CGame *pGame): _pGame(pGame)
@@ -65,7 +65,8 @@ void CALLBACK CRestartMenu::Update()
 
 		if (pInput->IsKeyHit(KEY_LEFT_MOUSE_BUTTON))
 			_pGame->SetState(GS_ACTION);
-
+	}
 	else
 		_pButtonNew->SetCurrentFrame(0);
+	
 }

@@ -9,12 +9,27 @@
 CLevel::CLevel(CGame *pGame): _pGame(pGame)
 {
 	_pPlayer = new CPlayer(this);
-	Load(1);
+	//Load(1);
 }
 
 CLevel::~CLevel()
 {
 	delete _pPlayer;
+
+	for (vector<ISprite *>::iterator it = _tilesZeroVect.begin(); it != _tilesZeroVect.end(); ++it)
+		delete (*it);
+
+	for (vector<ISprite *>::iterator it = _tilesOneVect.begin(); it != _tilesOneVect.end(); ++it)
+		delete (*it);
+
+	for (vector<CEnemy *>::iterator it = _enemiesVect.begin(); it != _enemiesVect.end(); ++it)
+		delete (*it);
+
+	for (vector<CTrap *>::iterator it = _trapsVect.begin(); it != _trapsVect.end(); ++it)
+		delete (*it);
+
+	for (vector<ISprite *>::iterator it = _tilesTwoVect.begin(); it != _tilesTwoVect.end(); ++it)
+		delete (*it);
 }
 
 void CALLBACK CLevel::Update(float fTime)
@@ -35,8 +50,28 @@ void CALLBACK CLevel::Update(float fTime)
 		if ((*it)->IsInVisibilityZone(_pPlayer->GetPosition()))
 			_pGame->SetState(GS_RESTART);
 
-		(*it)->UpdateVisibilityZone(_objects);
+		for (vector<CTrap *>::iterator itt = _trapsVect.begin(); itt != _trapsVect.end(); ++itt)
+		{
+			if ((*it)->GetPosition() == (*itt)->GetNextPosition())
+				(*it)->Kill();
+		}
+
+		(*it)->UpdateVisibilityZone(_collMap, _levSize);
 	}
+
+
+	// Trap
+	for (vector<CTrap *>::iterator it = _trapsVect.begin(); it != _trapsVect.end(); ++it)
+	{
+		(*it)->ActiveTrap(_pPlayer->GetNextPosition(), _pPlayer->GetPosition());
+
+		if (_pPlayer->GetNextPosition() == (*it)->GetNextPosition())
+			_pGame->SetState(GS_RESTART);
+	}
+
+	for (vector<CTrap *>::iterator it = _trapsVect.begin(); it != _trapsVect.end(); ++it)
+		(*it)->Update(fTime);
+	// Trap end
 
 	if (_pPlayer->GetPosition() == pFinishSpr->GetBasis().position)
 		_pGame->SetState(GS_MENU);
@@ -57,6 +92,9 @@ void CALLBACK CLevel::Draw()
 	_pPlayer->Draw();
 	
 	for (vector<CEnemy *>::iterator it = _enemiesVect.begin(); it != _enemiesVect.end(); ++it)
+		(*it)->Draw();
+
+	for (vector<CTrap *>::iterator it = _trapsVect.begin(); it != _trapsVect.end(); ++it)
 		(*it)->Draw();
 
 	if (pInput->IsKeyDown(GK_SHOW_VISIBILITY))
@@ -127,7 +165,7 @@ void CALLBACK CLevel::InitVisibility()
 
 bool CALLBACK CLevel::Load(int iNumber)
 {
-	string stringLevName("level_");
+	string stringLevName("data/level_");
 	stringLevName += '0' + iNumber;
 	stringLevName += ".tmx";
 	ifstream levFile(stringLevName.c_str());
@@ -166,7 +204,9 @@ bool CALLBACK CLevel::Load(int iNumber)
 		{
 			GetLevelParam(stringLine, "image source", strParam);
 			pComponentsManager->GetComponent((IComponent *&)pAnimation, GCT_ANIMATION);
-			pAnimation->SetTexture(strParam);
+			stringLine = "data/";
+			stringLine += strParam;
+			pAnimation->SetTexture(stringLine.c_str());
 			pAnimation->SetFrameSize(TILE_SIZE);
 			_animsVect.push_back(pAnimation);
 		}
@@ -212,6 +252,7 @@ bool CALLBACK CLevel::Load(int iNumber)
 			iY *= TILE_SIZE;
 
 			CEnemy *pEnenmy;
+			CTrap *pTrap;
 
 			switch (strParam[0])
 			{
@@ -228,6 +269,10 @@ bool CALLBACK CLevel::Load(int iNumber)
 				_enemiesVect.push_back(pEnenmy);
 
 
+				break;
+			case 't':
+				pTrap = new CTrap(Vector2f(iX, iY), this);
+				_trapsVect.push_back(pTrap);
 				break;
 			case 'f':
 				pFinishSpr->SetPosition(Vector2f(iX, iY));

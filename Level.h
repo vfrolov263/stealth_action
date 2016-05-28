@@ -2,6 +2,7 @@
 #include "Modules.h"
 #include "Player.h"
 #include "Enemy.h"
+#include "Trap.h"
 #include <iostream>
 #include <stdio.h>
 #include <string>
@@ -25,6 +26,7 @@ class CLevel
 	CPlayer *_pPlayer;
 	vector <CEnemy *> _enemiesVect;
 	multiset<Vector2f> _objects;
+	vector <CTrap *> _trapsVect;
 	Vector2i _finish;
 	CGame *_pGame;
 	

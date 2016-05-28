@@ -57,7 +57,7 @@ enum E_ENEMY_STATE
 
 };
 
-#define ENEMY_SPEED			120.0f;						// Скорость перемещения игрока.
+#define ENEMY_SPEED			60.0f;						// Скорость перемещения игрока.
 #define ENEMY_START_POSITION	Vector2f(32 * 10, 32 * 5)	// Для теста - потом будет считываться из файла. 
 
 extern ISprite *pVisibSpr;
@@ -70,6 +70,9 @@ class CEnemy: public CAnimatedObject
 	vector<char> trajectory;
 	vector<char>::iterator it;
 	map<int,Vector2i> visibilityZone;
+	Vector2i *_visibilityZoneCoords;
+	bool *_visibilityZone;
+	bool killed;
 
 	/*
 	Останавливает игрока.
@@ -87,7 +90,7 @@ class CEnemy: public CAnimatedObject
 	void CALLBACK MoveCommand();
 public:
 	CEnemy(const Vector2f &position);
-	virtual ~CEnemy() {}
+	~CEnemy();
 
 	/*
 	Обновляет игрока.
@@ -102,13 +105,19 @@ public:
 
 	void CALLBACK DrawVisibility();
 
-	map<int,Vector2i> CALLBACK GetDefaultVisibilityZone();
+	Vector2i * CALLBACK GetDefaultVisibilityZone(Vector2i *_visibilityZone);
 	
-	void CALLBACK UpdateVisibilityZone(multiset<Vector2f> &objects);
+	void CALLBACK UpdateVisibilityZone(bool **_collMap, Vector2i _levSize);//multiset<Vector2i> &objects);
 
 	bool CALLBACK IsInVisibilityZone(Vector2f objectPosition);
 
 	Vector2f CALLBACK GetPosition();
 
 	void CALLBACK AddToTrajectory(char t);
+
+	void CALLBACK Kill() { killed = true; }
+
+	bool CALLBACK IsKilled() { return killed; }
+
+	void CALLBACK ClearVisibilityZone() { for (int i = 0; i < 30; i++) _visibilityZone[i] = 0; }
 };

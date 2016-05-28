@@ -52,7 +52,7 @@ enum E_PLAYER_STATE
 
 };
 
-#define PLAYER_SPEED			120.0f;						// Скорость перемещения игрока.
+#define PLAYER_SPEED			60.0f;						// Скорость перемещения игрока.
 #define PLAYER_START_POSITION	Vector2f(32 * 5, 32 * 5)	// Для теста - потом будет считываться из файла. 
 
 class CLevel;
@@ -92,6 +92,8 @@ public:
 	void CALLBACK SetPosition(Vector2f &position);
 
 	const Vector2f &CALLBACK GetPosition() const { return _position; }
+
+	const Vector2f &CALLBACK GetNextPosition() const { return _nextPosition; }
 
 	/*
 	Рисует игрока.

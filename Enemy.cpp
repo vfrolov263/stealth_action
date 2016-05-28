@@ -67,6 +67,17 @@ CEnemy::CEnemy(const Vector2f &position): _position(position), _nextPosition(_po
 	_eState = ES_STAND_RIGHT;
 
 	_nextPosition = _position;
+
+	_visibilityZoneCoords = new Vector2i[30];
+	_visibilityZone = new bool[30];
+
+	killed = false;
+}
+
+CEnemy::~CEnemy()
+{
+	delete [] _visibilityZoneCoords;
+	delete [] _visibilityZone;
 }
 
 void CALLBACK CEnemy::Stand()
@@ -165,16 +176,18 @@ void CALLBACK CEnemy::Draw()
 
 void CALLBACK CEnemy::DrawVisibility()
 {
-	for (map<int,Vector2i>::iterator it = visibilityZone.begin(); it != visibilityZone.end(); it++)
+	for (int i = 0; i < 30; i++)
 	{
-		pVisibSpr->SetPosition(it->second);
-		pVisibSpr->Draw();
+		if (_visibilityZone[i]) {
+			pVisibSpr->SetPosition(_visibilityZoneCoords[i]);
+			pVisibSpr->Draw();
+		}
 	}
 }
 
-map<int,Vector2i> CALLBACK CEnemy::GetDefaultVisibilityZone()
+Vector2i * CALLBACK CEnemy::GetDefaultVisibilityZone(Vector2i *vZone)
 {
-	map<int,Vector2i> vZone;
+	//map<int,Vector2i> vZone;
 
 	switch (_eState) {
 	case ES_WALK_UP:
@@ -321,423 +334,216 @@ map<int,Vector2i> CALLBACK CEnemy::GetDefaultVisibilityZone()
 	return vZone;
 }
 
-void CALLBACK CEnemy::UpdateVisibilityZone(multiset<Vector2f> &objects)
+void CALLBACK CEnemy::UpdateVisibilityZone(bool **_collMap, Vector2i _levSize)
 {
-	visibilityZone = GetDefaultVisibilityZone();
-	map<int,Vector2i> vz = GetDefaultVisibilityZone();
+	_visibilityZoneCoords = GetDefaultVisibilityZone(&*_visibilityZoneCoords);
 
-	for (map<int,Vector2i>::iterator it1 = vz.begin(); it1 != vz.end(); it1++)
-		for (multiset<Vector2f>::iterator it2 = objects.begin(); it2 != objects.end(); it2++)
-			if ((it1->second.x == it2->x) && (it1->second.y == it2->y))
-				switch (it1->first)
-				{
-				case 0:
-					for (map<int,Vector2i>::iterator it3 = visibilityZone.begin(); it3 != visibilityZone.end(); it3++)
-						switch (it3->first)
-						{
-						case 0:
-						case 2:
-						case 3:
-						case 7:
-						case 8:
-						case 14:
-						case 15:
-						case 16:
-						case 23:
-						case 24:
-							visibilityZone.erase(it3->first);
-							it3 = visibilityZone.begin();
-							break;
-						}
-					break;
-				case 1:
-					for (map<int,Vector2i>::iterator it3 = visibilityZone.begin(); it3 != visibilityZone.end(); it3++)
-						switch (it3->first)
-						{
-						case 1:
-						case 5:
-						case 6:
-						case 12:
-						case 13:
-						case 20:
-						case 21:
-						case 22:
-						case 28:
-						case 29:
-							visibilityZone.erase(it3->first);
-							it3 = visibilityZone.begin();
-							break;
-						}
-					break;
-				case 2:
-					for (map<int,Vector2i>::iterator it3 = visibilityZone.begin(); it3 != visibilityZone.end(); it3++)
-						switch (it3->first)
-						{
-						case 2:
-						case 7:
-						case 8:
-						case 14:
-						case 15:
-						case 23:
-							visibilityZone.erase(it3->first);
-							it3 = visibilityZone.begin();
-							break;
-						}
-					break;
-				case 3:
-					for (map<int,Vector2i>::iterator it3 = visibilityZone.begin(); it3 != visibilityZone.end(); it3++)
-						switch (it3->first)
-						{
-						case 2:
-						case 3:
-						case 7:
-						case 8:
-						case 9:
-						case 14:
-						case 15:
-						case 16:
-						case 17:
-						case 23:
-						case 24:
-							visibilityZone.erase(it3->first);
-							it3 = visibilityZone.begin();
-							break;
-						}
-					break;
-				case 4:
-					for (map<int,Vector2i>::iterator it3 = visibilityZone.begin(); it3 != visibilityZone.end(); it3++)
-						switch (it3->first)
-						{
-						case 4:
-						case 9:
-						case 10:
-						case 11:
-						case 17:
-						case 18:
-						case 19:
-						case 24:
-						case 25:
-						case 26:
-						case 27:
-						case 28:
-							visibilityZone.erase(it3->first);
-							it3 = visibilityZone.begin();
-							break;
-						}
-					break;
-				case 5:
-					for (map<int,Vector2i>::iterator it3 = visibilityZone.begin(); it3 != visibilityZone.end(); it3++)
-						switch (it3->first)
-						{
-						case 5:
-						case 6:
-						case 11:
-						case 12:
-						case 13:
-						case 19:
-						case 20:
-						case 21:
-						case 22:
-						case 28:
-						case 29:
-							visibilityZone.erase(it3->first);
-							it3 = visibilityZone.begin();
-							break;
-						}
-					break;
-				case 6:
-					for (map<int,Vector2i>::iterator it3 = visibilityZone.begin(); it3 != visibilityZone.end(); it3++)
-						switch (it3->first)
-						{
-						case 6:
-						case 12:
-						case 13:
-						case 21:
-						case 22:
-						case 29:
-							visibilityZone.erase(it3->first);
-							it3 = visibilityZone.begin();
-							break;
-						}
-					break;
-				case 7:
-					for (map<int,Vector2i>::iterator it3 = visibilityZone.begin(); it3 != visibilityZone.end(); it3++)
-						switch (it3->first)
-						{
-						case 7:
-						case 14:
-						case 15:
-							visibilityZone.erase(it3->first);
-							it3 = visibilityZone.begin();
-							break;
-						}
-					break;
-				case 8:
-					for (map<int,Vector2i>::iterator it3 = visibilityZone.begin(); it3 != visibilityZone.end(); it3++)
-						switch (it3->first)
-						{
-						case 7:
-						case 8:
-						case 14:
-						case 15:
-						case 16:
-						case 23:
-							visibilityZone.erase(it3->first);
-							it3 = visibilityZone.begin();
-							break;
-						}
-					break;
-				case 9:
-					for (map<int,Vector2i>::iterator it3 = visibilityZone.begin(); it3 != visibilityZone.end(); it3++)
-						switch (it3->first)
-						{
-						case 9:
-						case 16:
-						case 17:
-						case 23:
-						case 24:
-						case 25:
-							visibilityZone.erase(it3->first);
-							it3 = visibilityZone.begin();
-							break;
-						}
-					break;
-				case 10:
-					for (map<int,Vector2i>::iterator it3 = visibilityZone.begin(); it3 != visibilityZone.end(); it3++)
-						switch (it3->first)
-						{
-						case 10:
-						case 18:
-						case 25:
-						case 26:
-						case 27:
-							visibilityZone.erase(it3->first);
-							it3 = visibilityZone.begin();
-							break;
-						}
-					break;
-				case 11:
-					for (map<int,Vector2i>::iterator it3 = visibilityZone.begin(); it3 != visibilityZone.end(); it3++)
-						switch (it3->first)
-						{
-						case 11:
-						case 19:
-						case 20:
-						case 27:
-						case 28:
-						case 29:
-							visibilityZone.erase(it3->first);
-							it3 = visibilityZone.begin();
-							break;
-						}
-					break;
-				case 12:
-					for (map<int,Vector2i>::iterator it3 = visibilityZone.begin(); it3 != visibilityZone.end(); it3++)
-						switch (it3->first)
-						{
-						case 12:
-						case 13:
-						case 20:
-						case 21:
-						case 22:
-						case 29:
-							visibilityZone.erase(it3->first);
-							it3 = visibilityZone.begin();
-							break;
-						}
-					break;
-				case 13:
-					for (map<int,Vector2i>::iterator it3 = visibilityZone.begin(); it3 != visibilityZone.end(); it3++)
-						switch (it3->first)
-						{
-						case 13:
-						case 21:
-						case 22:
-							visibilityZone.erase(it3->first);
-							it3 = visibilityZone.begin();
-							break;
-						}
-					break;
-				case 14:
-					for (map<int,Vector2i>::iterator it3 = visibilityZone.begin(); it3 != visibilityZone.end(); it3++)
-						switch (it3->first)
-						{
-						case 14:
-							visibilityZone.erase(it3->first);
-							it3 = visibilityZone.begin();
-							break;
-						}
-					break;
-				case 15:
-					for (map<int,Vector2i>::iterator it3 = visibilityZone.begin(); it3 != visibilityZone.end(); it3++)
-						switch (it3->first)
-						{
-						case 14:
-						case 15:
-						case 23:
-							visibilityZone.erase(it3->first);
-							it3 = visibilityZone.begin();
-							break;
-						}
-					break;
-				case 16:
-					for (map<int,Vector2i>::iterator it3 = visibilityZone.begin(); it3 != visibilityZone.end(); it3++)
-						switch (it3->first)
-						{
-						case 16:
-						case 23:
-						case 24:
-							visibilityZone.erase(it3->first);
-							it3 = visibilityZone.begin();
-							break;
-						}
-					break;
-				case 17:
-					for (map<int,Vector2i>::iterator it3 = visibilityZone.begin(); it3 != visibilityZone.end(); it3++)
-						switch (it3->first)
-						{
-						case 17:
-						case 24:
-						case 25:
-							visibilityZone.erase(it3->first);
-							it3 = visibilityZone.begin();
-							break;
-						}
-					break;
-				case 18:
-					for (map<int,Vector2i>::iterator it3 = visibilityZone.begin(); it3 != visibilityZone.end(); it3++)
-						switch (it3->first)
-						{
-						case 18:
-						case 26:
-							visibilityZone.erase(it3->first);
-							it3 = visibilityZone.begin();
-							break;
-						}
-					break;
-				case 19:
-					for (map<int,Vector2i>::iterator it3 = visibilityZone.begin(); it3 != visibilityZone.end(); it3++)
-						switch (it3->first)
-						{
-						case 19:
-						case 27:
-						case 28:
-							visibilityZone.erase(it3->first);
-							it3 = visibilityZone.begin();
-							break;
-						}
-					break;
-				case 20:
-					for (map<int,Vector2i>::iterator it3 = visibilityZone.begin(); it3 != visibilityZone.end(); it3++)
-						switch (it3->first)
-						{
-						case 20:
-						case 28:
-						case 29:
-							visibilityZone.erase(it3->first);
-							it3 = visibilityZone.begin();
-							break;
-						}
-					break;
-				case 21:
-					for (map<int,Vector2i>::iterator it3 = visibilityZone.begin(); it3 != visibilityZone.end(); it3++)
-						switch (it3->first)
-						{
-						case 21:
-						case 22:
-						case 29:
-							visibilityZone.erase(it3->first);
-							it3 = visibilityZone.begin();
-							break;
-						}
-					break;
-				case 22:
-					for (map<int,Vector2i>::iterator it3 = visibilityZone.begin(); it3 != visibilityZone.end(); it3++)
-						switch (it3->first)
-						{
-						case 22:
-							visibilityZone.erase(it3->first);
-							it3 = visibilityZone.begin();
-							break;
-						}
-					break;
-				case 23:
-					for (map<int,Vector2i>::iterator it3 = visibilityZone.begin(); it3 != visibilityZone.end(); it3++)
-						switch (it3->first)
-						{
-						case 23:
-							visibilityZone.erase(it3->first);
-							it3 = visibilityZone.begin();
-							break;
-						}
-					break;
-				case 24:
-					for (map<int,Vector2i>::iterator it3 = visibilityZone.begin(); it3 != visibilityZone.end(); it3++)
-						switch (it3->first)
-						{
-						case 24:
-							visibilityZone.erase(it3->first);
-							it3 = visibilityZone.begin();
-							break;
-						}
-					break;
-				case 25:
-					for (map<int,Vector2i>::iterator it3 = visibilityZone.begin(); it3 != visibilityZone.end(); it3++)
-						switch (it3->first)
-						{
-						case 25:
-							visibilityZone.erase(it3->first);
-							it3 = visibilityZone.begin();
-							break;
-						}
-					break;
-				case 26:
-					for (map<int,Vector2i>::iterator it3 = visibilityZone.begin(); it3 != visibilityZone.end(); it3++)
-						switch (it3->first)
-						{
-						case 26:
-							visibilityZone.erase(it3->first);
-							it3 = visibilityZone.begin();
-							break;
-						}
-					break;
-				case 27:
-					for (map<int,Vector2i>::iterator it3 = visibilityZone.begin(); it3 != visibilityZone.end(); it3++)
-						switch (it3->first)
-						{
-						case 27:
-							visibilityZone.erase(it3->first);
-							it3 = visibilityZone.begin();
-							break;
-						}
-					break;
-				case 28:
-					for (map<int,Vector2i>::iterator it3 = visibilityZone.begin(); it3 != visibilityZone.end(); it3++)
-						switch (it3->first)
-						{
-						case 28:
-							visibilityZone.erase(it3->first);
-							it3 = visibilityZone.begin();
-							break;
-						}
-					break;
-				case 29:
-					for (map<int,Vector2i>::iterator it3 = visibilityZone.begin(); it3 != visibilityZone.end(); it3++)
-						switch (it3->first)
-						{
-						case 29:
-							visibilityZone.erase(it3->first);
-							it3 = visibilityZone.begin();
-							break;
-						}
-					break;
-				}
+	for (int i = 0; i < 30; i++)
+		_visibilityZone[i] = 1;
+	
+	for (int k = 0; k < 30; k++)
+		for (int i = 0; i < _levSize.x; i++)
+			for (int j = 0; j < _levSize.y; j++)
+				if ((_visibilityZoneCoords[k].x == i * TILE_SIZE) && (_visibilityZoneCoords[k].y == j * TILE_SIZE) && _collMap[i][j])
+					switch (k)
+					{
+					case 0:
+						_visibilityZone[0] = 0;
+						_visibilityZone[2] = 0;
+						_visibilityZone[3] = 0;
+						_visibilityZone[7] = 0;
+						_visibilityZone[8] = 0;
+						_visibilityZone[14] = 0;
+						_visibilityZone[15] = 0;
+						_visibilityZone[16] = 0;
+						_visibilityZone[23] = 0;
+						_visibilityZone[24] = 0;
+						break;
+					case 1:
+						_visibilityZone[1] = 0;
+						_visibilityZone[5] = 0;
+						_visibilityZone[6] = 0;
+						_visibilityZone[12] = 0;
+						_visibilityZone[13] = 0;
+						_visibilityZone[20] = 0;
+						_visibilityZone[21] = 0;
+						_visibilityZone[22] = 0;
+						_visibilityZone[28] = 0;
+						_visibilityZone[29] = 0;
+						break;
+					case 2:
+						_visibilityZone[2] = 0;
+						_visibilityZone[7] = 0;
+						_visibilityZone[8] = 0;
+						_visibilityZone[14] = 0;
+						_visibilityZone[15] = 0;
+						_visibilityZone[23] = 0;
+						break;
+					case 3:
+						_visibilityZone[2] = 0;
+						_visibilityZone[3] = 0;
+						_visibilityZone[7] = 0;
+						_visibilityZone[8] = 0;
+						_visibilityZone[9] = 0;
+						_visibilityZone[14] = 0;
+						_visibilityZone[15] = 0;
+						_visibilityZone[16] = 0;
+						_visibilityZone[17] = 0;
+						_visibilityZone[23] = 0;
+						_visibilityZone[24] = 0;
+						break;
+					case 4:
+						_visibilityZone[4] = 0;
+						_visibilityZone[9] = 0;
+						_visibilityZone[10] = 0;
+						_visibilityZone[11] = 0;
+						_visibilityZone[17] = 0;
+						_visibilityZone[18] = 0;
+						_visibilityZone[19] = 0;
+						_visibilityZone[24] = 0;
+						_visibilityZone[25] = 0;
+						_visibilityZone[26] = 0;
+						_visibilityZone[27] = 0;
+						_visibilityZone[28] = 0;
+						break;
+					case 5:
+						_visibilityZone[5] = 0;
+						_visibilityZone[6] = 0;
+						_visibilityZone[11] = 0;
+						_visibilityZone[12] = 0;
+						_visibilityZone[13] = 0;
+						_visibilityZone[19] = 0;
+						_visibilityZone[20] = 0;
+						_visibilityZone[21] = 0;
+						_visibilityZone[22] = 0;
+						_visibilityZone[28] = 0;
+						_visibilityZone[29] = 0;
+						break;
+					case 6:
+						_visibilityZone[6] = 0;
+						_visibilityZone[12] = 0;
+						_visibilityZone[13] = 0;
+						_visibilityZone[21] = 0;
+						_visibilityZone[22] = 0;
+						_visibilityZone[29] = 0;
+						break;
+					case 7:
+						_visibilityZone[7] = 0;
+						_visibilityZone[14] = 0;
+						_visibilityZone[15] = 0;
+						break;
+					case 8:
+						_visibilityZone[7] = 0;
+						_visibilityZone[8] = 0;
+						_visibilityZone[14] = 0;
+						_visibilityZone[15] = 0;
+						_visibilityZone[16] = 0;
+						_visibilityZone[23] = 0;
+						break;
+					case 9:
+						_visibilityZone[9] = 0;
+						_visibilityZone[16] = 0;
+						_visibilityZone[17] = 0;
+						_visibilityZone[23] = 0;
+						_visibilityZone[24] = 0;
+						_visibilityZone[25] = 0;
+						break;
+					case 10:
+						_visibilityZone[10] = 0;
+						_visibilityZone[18] = 0;
+						_visibilityZone[25] = 0;
+						_visibilityZone[26] = 0;
+						_visibilityZone[27] = 0;
+						break;
+					case 11:
+						_visibilityZone[11] = 0;
+						_visibilityZone[19] = 0;
+						_visibilityZone[20] = 0;
+						_visibilityZone[27] = 0;
+						_visibilityZone[28] = 0;
+						_visibilityZone[29] = 0;
+						break;
+					case 12:
+						_visibilityZone[12] = 0;
+						_visibilityZone[13] = 0;
+						_visibilityZone[20] = 0;
+						_visibilityZone[21] = 0;
+						_visibilityZone[22] = 0;
+						_visibilityZone[29] = 0;
+						break;
+					case 13:
+						_visibilityZone[13] = 0;
+						_visibilityZone[21] = 0;
+						_visibilityZone[22] = 0;
+						break;
+					case 14:
+						_visibilityZone[14] = 0;
+						break;
+					case 15:
+						_visibilityZone[14] = 0;
+						_visibilityZone[15] = 0;
+						_visibilityZone[23] = 0;
+						break;
+					case 16:
+						_visibilityZone[16] = 0;
+						_visibilityZone[23] = 0;
+						_visibilityZone[24] = 0;
+						break;
+					case 17:
+						_visibilityZone[17] = 0;
+						_visibilityZone[24] = 0;
+						_visibilityZone[25] = 0;
+						break;
+					case 18:
+						_visibilityZone[18] = 0;
+						_visibilityZone[26] = 0;
+						break;
+					case 19:
+						_visibilityZone[19] = 0;
+						_visibilityZone[27] = 0;
+						_visibilityZone[28] = 0;
+						break;
+					case 20:
+						_visibilityZone[20] = 0;
+						_visibilityZone[28] = 0;
+						_visibilityZone[29] = 0;
+						break;
+					case 21:
+						_visibilityZone[21] = 0;
+						_visibilityZone[22] = 0;
+						_visibilityZone[29] = 0;
+						break;
+					case 22:
+						_visibilityZone[22] = 0;
+						break;
+					case 23:
+						_visibilityZone[23] = 0;
+						break;
+					case 24:
+						_visibilityZone[24] = 0;
+						break;
+					case 25:
+						_visibilityZone[25] = 0;
+						break;
+					case 26:
+						_visibilityZone[26] = 0;
+						break;
+					case 27:
+						_visibilityZone[27] = 0;
+						break;
+					case 28:
+						_visibilityZone[28] = 0;
+						break;
+					case 29:
+						_visibilityZone[29] = 0;
+						break;
+					}
 }
 
 bool CALLBACK CEnemy::IsInVisibilityZone(Vector2f objectPosition)
 {
-	for (map<int,Vector2i>::iterator it = visibilityZone.begin(); it != visibilityZone.end(); it++)
-		if ((it->second.x == objectPosition.x) && (it->second.y == objectPosition.y))
+	for (int i = 0; i < 30; i++)
+		if ((_visibilityZoneCoords[i].x == objectPosition.x) && (_visibilityZoneCoords[i].y == objectPosition.y) && (_visibilityZone[i]))
 			return true;
 
 	return false;
